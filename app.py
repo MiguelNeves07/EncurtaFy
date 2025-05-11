@@ -1,6 +1,7 @@
 import sqlite3
 import string
 import random
+import os
 from flask import Flask, render_template, request, redirect, url_for, g
 
 app = Flask(__name__)
@@ -40,7 +41,7 @@ def index():
         db = get_db()
         cur = db.cursor()
 
-        # Verifica se a URL já existe
+        # Verifica se a URL já foi encurtada antes
         cur.execute("SELECT short_id FROM urls WHERE original_url = ?", (original_url,))
         existing = cur.fetchone()
         if existing:
@@ -71,4 +72,5 @@ def redirect_short_url(short_id):
 
 if __name__ == '__main__':
     init_db()
-    app.run(debug=True)
+    port = int(os.environ.get('PORT', 443))  # 443 localmente, variável PORT na produção
+    app.run(host='0.0.0.0', port=port)
